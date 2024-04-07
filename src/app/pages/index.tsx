@@ -1,6 +1,6 @@
 // pages/index.tsx
 import type { NextPage } from "next";
-import Terminal from "../app/components/Terminal/Terminal";
+import Terminal from "../components/Terminal/Terminal";
 
 const Home: NextPage = () => {
   return (
