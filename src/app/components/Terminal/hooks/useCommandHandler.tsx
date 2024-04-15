@@ -1,6 +1,5 @@
-// useCommandHandler.tsx
-import { KeyboardEvent } from "react";
-import TimeStamp from "../textbox/TimeStamp"; // Assuming HistoryEntry is exported from this file
+import { KeyboardEvent, useState } from "react";
+import TimeStamp from "../textbox/TimeStamp";
 
 type ExecuteCommand = (command: string) => any[];
 
@@ -12,17 +11,25 @@ const useCommandHandler = (
   setHistory: (history: any[] | ((prevHistory: any[]) => any[])) => void,
   setIsCommandListVisible: (isVisible: boolean) => void
 ) => {
+  const [commandIndex, setCommandIndex] = useState(0);
+
   return (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Tab") {
-      e.preventDefault(); // Prevent the default tab key behavior
+      e.preventDefault();
       const possibleCommands = Object.keys(commandComponents);
-      const matchingCommand = possibleCommands.find((cmd) =>
-        cmd.startsWith(input)
-      );
-      if (matchingCommand) {
-        setInput(matchingCommand);
+
+      if (!input || input === possibleCommands[commandIndex]) {
+        const newCommandIndex = (commandIndex + 1) % possibleCommands.length;
+        setCommandIndex(newCommandIndex);
+        setInput(possibleCommands[newCommandIndex]);
+      } else {
+        const matchingCommand = possibleCommands.find((cmd) =>
+          cmd.startsWith(input)
+        );
+        if (matchingCommand) {
+          setInput(matchingCommand);
+        }
       }
-    } else if (e.key === "Enter") {
     }
 
     if (e.key === "l" && e.ctrlKey) {

@@ -1,107 +1,97 @@
-import React, { useEffect, useState } from "react";
-import { Doughnut } from "react-chartjs-2";
-import "chart.js/auto";
+// Skills.tsx
 
-interface PieChartProps {}
+import React, { useRef, useEffect } from "react";
+import Chart from "chart.js/auto";
 
-const PieChart: React.FC<PieChartProps> = () => {
-  const [delayed, setDelayed] = useState(false);
+const data = {
+  labels: ["FRONTEND", "BACKEND", "UI/UX", "QA"],
+  datasets: [
+    {
+      data: [7, 5, 8, 7],
+      fill: true,
+      backgroundColor: "transparent",
+      borderColor: "blue",
+      pointBackgroundColor: "rgb(0, 123, 255)",
+      pointBorderColor: "#fff",
+      pointHoverBackgroundColor: "#fff",
+      pointHoverBorderColor: "rgb(0, 123, 255)",
+    },
+  ],
+};
+
+const options = {
+  scales: {
+    r: {
+      ticks: {
+        display: false,
+      },
+      grid: {
+        color: function (context) {
+          return context.tick.value <= 50 ? "grey" : "black";
+        },
+      },
+      angleLines: {
+        color: "#000000",
+      },
+      display: true,
+      min: 0,
+      max: 10,
+      beginAtZero: true,
+    },
+  },
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      enabled: false,
+    },
+  },
+};
+
+const Skills: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDelayed(true);
-    }, 3000); // Adjust delay as needed
-    return () => clearTimeout(timer);
+    let chartInstance: Chart | null = null;
+
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext("2d");
+      if (ctx) {
+        // If there's an existing chart instance, destroy it before creating a new one
+        if (chartInstance) {
+          chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
+          type: "radar",
+          data: data,
+          options: options, // Use the options object here
+        });
+      }
+    }
+
+    // Cleanup function to destroy the chart instance when the component unmounts
+    return () => {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+    };
   }, []);
 
-  const data = {
-    labels: ["NextJs", "TypeScript", "TailwindCSS", "Jest", "Purple"],
-    datasets: [
-      {
-        data: [300, 50, 100, 40, 120],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-        ],
-        borderWidth: 1,
-        hoverOffset: 30, // Reduced hoverOffset for better visual experience
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false, // Allows the chart to fully utilize the container's dimensions
-    layout: {
-      padding: {
-        top: 40, // Adjust the top padding
-        bottom: 40, // Adjust the bottom padding
-        left: 60,
-      },
-    },
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            let label = context.label || "";
-            if (label) {
-              label += ": ";
-            }
-            if (context.parsed !== undefined) {
-              label += context.parsed + "%";
-            }
-            return label;
-          },
-        },
-      },
-      legend: {
-        display: true,
-        position: "right",
-        labels: {
-          padding: 20,
-        },
-      },
-    },
-    animation: {
-      onComplete: () => {
-        setDelayed(true);
-      },
-      delay: (context) => {
-        let delay = 0;
-        if (context.type === "data" && context.mode === "default" && !delayed) {
-          delay = context.dataIndex * 300; // Adjusted for a smoother animation
-        }
-        return delay;
-      },
-    },
-  };
-
-  // Adjusting the chart container style
-  const chartContainerStyle = {
-    display: "flex",
-    justifyContent: "center",
-    position: "relative",
-    width: "400px", // Maintain or adjust width as needed
-    height: "300px", // Increased height to accommodate hover effects
-    margin: "auto",
-    overflow: "visible",
-  };
-
   return (
-    <div style={chartContainerStyle}>
-      <Doughnut data={data} options={options} />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <div style={{ width: "400px", height: "400px" }}>
+        <canvas ref={canvasRef} />
+      </div>
     </div>
   );
 };
 
-export default PieChart;
+export default Skills;

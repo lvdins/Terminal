@@ -4,10 +4,8 @@ import { Git } from "../Git/git";
 import Main from "../Main/main";
 import Bio from "../Bio/bio";
 import Skills from "../Skills/skills";
-import TimeStamp from "./textbox/TimeStamp";
 import useCommandExecution from "./hooks/useCommandExecution";
 import useCommandHandler from "./hooks/useCommandHandler";
-import CommandList from "./textbox/CommandList";
 import TerminalWindow from "./textbox/TerminalWindow";
 
 const commandComponents: { [key: string]: React.FC } = {

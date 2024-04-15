@@ -1,4 +1,3 @@
-// components/Main.tsx
 import React from "react";
 
 const Bio = () => {
